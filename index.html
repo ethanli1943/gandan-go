@@ -24,8 +24,19 @@
   if (m) {
     target = CONTACT + '?gd_source=' + c + '&utm_source=' + UTM[m[2]] +
       '&utm_medium=organic&utm_campaign=' + m[1] + '&utm_content=' + c;
+    // 這台裝置的隨機碼：只用來讓後台把 30 分鐘內的重複點擊算成一次，不含任何個資
+    var v = '';
     try {
-      var data = JSON.stringify({ c: c });
+      v = localStorage.getItem('gd_vid') || '';
+      if (!/^[a-z0-9]{16}$/.test(v)) {
+        v = Array.from(crypto.getRandomValues(new Uint8Array(8)), function (b) {
+          return ('0' + b.toString(16)).slice(-2);
+        }).join('');
+        localStorage.setItem('gd_vid', v);
+      }
+    } catch (e) { v = ''; }
+    try {
+      var data = JSON.stringify({ c: c, v: v });
       var sent = navigator.sendBeacon &&
         navigator.sendBeacon(ENDPOINT, new Blob([data], { type: 'text/plain' }));
       if (!sent) fetch(ENDPOINT, { method: 'POST', mode: 'no-cors', keepalive: true, body: data });
