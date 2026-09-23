@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>甘丹設計｜諮詢表單</title>
+<style>body{font-family:sans-serif;text-align:center;padding:40px 16px;color:#555}a{color:#555}</style>
+</head>
+<body>
+<p>正在前往甘丹設計諮詢表單…</p>
+<p><a id="go" href="https://contact.gandandesign.com.tw/">若沒有自動跳轉，請點這裡</a></p>
+<script>
+(function () {
+  // 部署 Apps Script Web App 後，把 /exec 網址貼在這裡
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbzEKtgt4NUEiF1rcVwedJiyPJcTpbWu_ilqyp6haBLn8jBTvAcYT1NAZnyzem7kgguNJg/exec';
+  var CONTACT = 'https://contact.gandandesign.com.tw/';
+  var UTM = { yt: 'youtube', fb: 'facebook' };
+
+  var c = new URLSearchParams(location.search).get('c') || '';
+  var m = /^(v\d{3})-(yt|fb)$/.exec(c);
+  var target = CONTACT;
+  if (m) {
+    target = CONTACT + '?gd_source=' + c + '&utm_source=' + UTM[m[2]] +
+      '&utm_medium=organic&utm_campaign=' + m[1] + '&utm_content=' + c;
+    try {
+      var data = JSON.stringify({ c: c });
+      var sent = navigator.sendBeacon &&
+        navigator.sendBeacon(ENDPOINT, new Blob([data], { type: 'text/plain' }));
+      if (!sent) fetch(ENDPOINT, { method: 'POST', mode: 'no-cors', keepalive: true, body: data });
+    } catch (e) {}
+  }
+  document.getElementById('go').href = target;
+  location.replace(target);
+})();
+</script>
+</body>
+</html>
