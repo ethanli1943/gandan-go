@@ -19,11 +19,17 @@
   var UTM = { yt: 'youtube', fb: 'facebook' };
 
   var c = new URLSearchParams(location.search).get('c') || '';
-  var m = /^(v\d{3})-(yt|fb)$/.exec(c);
+  var m = /^(v\d{3})-(yt|fb)$/.exec(c);      // 影片：v001-yt
+  var isEntry = /^s\d{3}$/.test(c);            // 固定入口（FB 社團等）：s001
   var target = CONTACT;
   if (m) {
     target = CONTACT + '?gd_source=' + c + '&utm_source=' + UTM[m[2]] +
       '&utm_medium=organic&utm_campaign=' + m[1] + '&utm_content=' + c;
+  } else if (isEntry) {
+    target = CONTACT + '?gd_source=' + c + '&utm_source=entry&utm_medium=referral&utm_campaign=' + c +
+      '&utm_content=' + c;
+  }
+  if (m || isEntry) {
     // 這台裝置的隨機碼：只用來讓後台把 30 分鐘內的重複點擊算成一次，不含任何個資
     var v = '';
     try {
